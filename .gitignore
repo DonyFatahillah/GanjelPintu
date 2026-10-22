@@ -1,0 +1,9 @@
+node_modules/
+node_olds/
+.env
+dist/
+npm-debug.log*
+.npm/
+.cache/
+assets/
+data/
