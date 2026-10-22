@@ -7,34 +7,30 @@ module.exports = {
     .setDescription('Leaves the current voice channel.'),
   name: 'leave', // For prefix command
   async execute(interactionOrMessage) {
+    const isSlash = interactionOrMessage.isChatInputCommand?.();
     const guildId = interactionOrMessage.guildId;
-    const connection = getVoiceConnection(guildId);
-
-    if (!connection) {
-      const response = 'I am not connected to any voice channel!';
-      if (interactionOrMessage.isChatInputCommand?.()) {
-        return interactionOrMessage.reply(response);
-      } else {
-        return interactionOrMessage.channel.send(response);
-      }
-    }
+    const client = interactionOrMessage.client;
 
     try {
-      connection.destroy();
-      const response = 'Left the voice channel.';
-      if (interactionOrMessage.isChatInputCommand?.()) {
-        return interactionOrMessage.reply(response);
+      const queue = client.distube?.getQueue(guildId);
+      if (queue) {
+        await queue.voices.leave();
       } else {
-        return interactionOrMessage.channel.send(response);
+        const connection = getVoiceConnection(guildId);
+        if (connection) {
+          connection.destroy();
+        } else {
+          const response = 'I am not connected to any voice channel!';
+          return isSlash ? interactionOrMessage.reply(response) : interactionOrMessage.channel.send(response);
+        }
       }
+
+      const response = 'Left the voice channel.';
+      return isSlash ? interactionOrMessage.reply(response) : interactionOrMessage.channel.send(response);
     } catch (error) {
       console.error(error);
       const response = 'Failed to leave the voice channel.';
-      if (interactionOrMessage.isChatInputCommand?.()) {
-        return interactionOrMessage.reply(response);
-      } else {
-        return interactionOrMessage.channel.send(response);
-      }
+      return isSlash ? interactionOrMessage.reply(response) : interactionOrMessage.channel.send(response);
     }
   },
 };
