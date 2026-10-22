@@ -19,6 +19,7 @@ loadCommands(client);
 
 client.once(Events.ClientReady, async (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
+  console.log(`test updt`)
   
   // Register slash commands to the specified guild
   const { TOKEN, GUILD_ID } = process.env;
